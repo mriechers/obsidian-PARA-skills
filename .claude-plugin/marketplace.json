@@ -1,15 +1,15 @@
 {
-  "name": "obsidian-skills",
+  "name": "obsidian-para-skills",
   "owner": {
-    "name": "Steph Ango",
-    "url": "https://stephango.com/"
+    "name": "Mark Riechers",
+    "url": "https://github.com/mriechers"
   },
   "plugins": [
     {
       "name": "obsidian",
       "source": "./",
-      "description": "Claude Skills for Obsidian",
-      "version": "1.0.1"
+      "description": "Claude Skills for Obsidian — upstream skills by Steph Ango (kepano) plus PARA vault workflow skills",
+      "version": "2.0.0"
     }
   ]
 }
