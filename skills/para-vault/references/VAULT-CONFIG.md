@@ -214,11 +214,22 @@ limit to 100 tasks
 - Plugin: obsidian-local-rest-api v3.6.1. **HTTPS only on port `27124`.**
 - Self-signed certificate → clients use `curl -k` (or pin the cert).
 - Auth: `Authorization: Bearer <API key>`. **Key retrieval: 1Password `op` CLI**
-  (v2.34.1 at `/opt/homebrew/bin/op`):
+  (v2.34.1 at `/opt/homebrew/bin/op`), personal account `my.1password.com`:
 
   ```
-  op://<vault>/<item>/<field>   # PLACEHOLDER — confirm via 'op item list' at deploy
+  op://Workspace-Personal/Obsidian Local REST API Key/credential
   ```
+
+  Retrieve into a shell variable — never echo the key into logs or output:
+
+  ```
+  KEY="$(op read 'op://Workspace-Personal/Obsidian Local REST API Key/credential')"
+  ```
+
+  The item is an API Credential; the key is its `credential` field. If `op`
+  reports multiple accounts, add `--account my.1password.com` (or set
+  `OP_ACCOUNT`); the vault name is currently unambiguous so the bare reference
+  resolves too.
 
 - Known-good calls (from `/add-to-inbox` + vault-courier usage):
   - Health: `GET https://localhost:27124/` (also `127.0.0.1`).

@@ -34,8 +34,8 @@ it into logs or terminal output:
 KEY="$(op read "op://<vault>/<item>/<field>")"   # exact op:// ref → VAULT-CONFIG §8
 ```
 
-- The exact `op://<vault>/<item>/<field>` reference is recorded in VAULT-CONFIG §8
-  (a placeholder there until confirmed with `op item list` at deploy).
+- The exact `op://<vault>/<item>/<field>` reference for this vault is recorded in
+  VAULT-CONFIG §8 — copy it from there.
 - Keep the key in the `$KEY` shell variable and reference `"$KEY"` in headers.
   **Never** print it: avoid `set -x`, `curl -v`, and `echo "$KEY"`, which would
   leak it into logs or scrollback.
@@ -86,35 +86,31 @@ break the request. Encode the path, not the header or body.
 ## 5. Frontmatter obligation
 
 API-created notes are written by the plugin, **not** through Obsidian's in-app
-note-creation flow, so they do not go through interactive templating. It is
-**unconfirmed** whether Templater's folder-templates fire on REST-created files
-(see the Templater note below). Either way, a note that reaches the vault must
-already satisfy the full frontmatter contract, so **always include the complete
-frontmatter block in the PUT body** — `tags` (first tag `all`), `created`, `para`,
-and any status/type fields the target folder expects.
+note-creation flow, so they do not go through interactive templating. Templater's
+folder-templates **do not fire** on REST-created files (verified against this
+vault), so nothing fills in the frontmatter for you — a note that reaches the
+vault must already satisfy the full frontmatter contract. **Always include the
+complete frontmatter block in the PUT body** — `tags` (first tag `all`),
+`created`, `para`, and any status/type fields the target folder expects.
 
 Do not restate the contract here — defer to
 [`../para-vault/references/VAULT-CONFIG.md`](../para-vault/references/VAULT-CONFIG.md)
 §3 for the field list and rules, and to [`obsidian-markdown`](../obsidian-markdown)
 for property syntax.
 
-### Templater double-fire (unresolved) — create-then-verify
+### Verify after create (Templater does not double-fire)
 
-It is **not confirmed** whether Templater folder-templates fire on files created
-via the REST API. `0 - INBOX` and other PARA folders are template-covered
-in-app, so a REST PUT *might* also trigger the folder template — producing a
-**doubled** frontmatter block (template + your body) or a duplicated template
-skeleton. Do not assume either outcome. Use a strategy that is safe under both:
+Testing against this vault confirmed Templater folder-templates **do not** fire
+on REST-created files: a PUT into a template-covered folder (`0 - INBOX`) stores
+exactly the body you send — no injected template skeleton, no doubled
+frontmatter. A quick verify step is still cheap insurance:
 
 1. PUT the note with the full frontmatter contract in the body (§5).
-2. **GET the note back** and verify it has **exactly one** frontmatter block that
-   matches the contract, with no duplicated template skeleton.
-3. If templating double-fired (a second `---` block or duplicated headings
-   appear), **reconcile**: re-issue the PUT with the canonical single-frontmatter
-   body (PUT replaces the whole file), then GET and re-verify.
-
-If templating did not fire, step 2 passes on the first check and no reconcile is
-needed — so this flow is correct whichever way the open question resolves.
+2. **GET the note back** and confirm it has **exactly one** frontmatter block
+   matching the contract (your PUT body, unchanged).
+3. In the unlikely event a second `---` block or duplicated headings appear,
+   **reconcile**: re-issue the PUT with the canonical single-frontmatter body
+   (PUT replaces the whole file), then GET and re-verify.
 
 ## 6. Fallback — Obsidian not running
 
