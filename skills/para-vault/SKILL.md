@@ -1,6 +1,6 @@
 ---
 name: para-vault
-description: "Work with a PARA-organized Obsidian vault: folder structure, the para frontmatter property as ground truth, tag and status conventions, templates, and routing between file edits, CLI, and REST API. Use when creating, moving, filing, or classifying notes in a PARA vault, or before any other vault operation."
+description: "Work with a PARA-organized Obsidian vault: folder structure, the para frontmatter property as ground truth, tag and status conventions, templates, and routing between file edits, CLI, and REST API. Use when creating, saving, moving, filing, or classifying notes in a PARA vault — including a bare 'save this to my vault' or 'drop this in Obsidian' with no folder given (default to the Inbox) — or before any other vault operation."
 ---
 
 # PARA Vault Skill
@@ -33,6 +33,7 @@ To move a note between categories, **change its `para` value** — do not just d
 
 ## Creating notes
 
+- **Default destination — the Inbox.** When asked to "save this to the vault", "drop this in Obsidian", or add a note **without a specified folder or PARA category**, create a **new note in the Inbox** (path in the config) with the full frontmatter contract — `para: inbox`, anchor-tag-first `tags`, and `created`. Don't stop to ask where it goes: the Inbox is the un-triaged capture point, and classification happens later by changing `para`. Give the note a Title-Case filename derived from its content (sanitize/collision rules in the config), and create a **new** note rather than appending to an existing one. Only deviate when the user names a destination or the content plainly belongs elsewhere.
 - **In-app creation** applies the matching folder-template automatically (template map in the config).
 - **Out-of-app creation** (direct file write, REST API) does **not** reliably fire templates — apply the matching template's body and the full frontmatter contract yourself. See the template map and creation notes in the config.
 

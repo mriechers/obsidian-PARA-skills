@@ -98,6 +98,11 @@ Do not restate the contract here — defer to
 §3 for the field list and rules, and to [`obsidian-markdown`](../obsidian-markdown)
 for property syntax.
 
+**No destination given?** Default to a **new note in the Inbox** with `para: inbox`
+— PUT to the Inbox path (VAULT-CONFIG §2). This mirrors
+[`para-vault`](../para-vault/SKILL.md)'s default-destination rule; don't invent a
+folder or append to an unrelated note.
+
 ### Verify after create (Templater does not double-fire)
 
 Testing against this vault confirmed Templater folder-templates **do not** fire
