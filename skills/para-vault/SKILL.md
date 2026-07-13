@@ -35,7 +35,7 @@ To move a note between categories, **change its `para` value** — do not just d
 
 - **Default destination — the Inbox.** When asked to "save this to the vault", "drop this in Obsidian", or add a note **without a specified folder or PARA category**, create a **new note in the Inbox** (path in the config) with the full frontmatter contract — `para: inbox`, anchor-tag-first `tags`, and `created`. Don't stop to ask where it goes: the Inbox is the un-triaged capture point, and classification happens later by changing `para`. Give the note a Title-Case filename derived from its content (sanitize/collision rules in the config), and create a **new** note rather than appending to an existing one. Only deviate when the user names a destination or the content plainly belongs elsewhere.
 - **In-app creation** applies the matching folder-template automatically (template map in the config).
-- **Out-of-app creation** (direct file write, REST API) does **not** reliably fire templates — apply the matching template's body and the full frontmatter contract yourself. See the template map and creation notes in the config.
+- **Out-of-app creation** (direct file write, REST API) does **not** fire templates — **read the matching template file** (via the config's template map, e.g. the Inbox template) and reproduce its body, then add the full frontmatter contract; build from the real template, never a remembered skeleton — it is the source of truth for note structure.
 
 ## Hygiene rules
 

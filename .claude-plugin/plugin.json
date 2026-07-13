@@ -1,6 +1,6 @@
 {
   "name": "obsidian",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Create and edit Obsidian vault files including Markdown, Bases, and Canvas, plus PARA vault workflow skills for tasks, kanban, the Local REST API, and daily journals. Use when working with .md, .base, or .canvas files in an Obsidian vault.",
   "author": {
     "name": "Mark Riechers",
