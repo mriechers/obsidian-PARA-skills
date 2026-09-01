@@ -1,6 +1,6 @@
 ---
 name: para-vault
-description: "Work with a PARA-organized Obsidian vault: folder structure, the para frontmatter property as ground truth, tag and status conventions, templates, and routing between file edits, CLI, and REST API. Use when creating, saving, moving, filing, or classifying notes in a PARA vault — including a bare 'save this to my vault' or 'drop this in Obsidian' with no folder given (default to the Inbox) — or before any other vault operation."
+description: "Work with a PARA-organized Obsidian vault: folder structure as ground truth, the para frontmatter property as its derived cache, tag and status conventions, templates, and routing between file edits, CLI, and REST API. Use when creating, saving, moving, filing, or classifying notes in a PARA vault — including a bare 'save this to my vault' or 'drop this in Obsidian' with no folder given (default to the Inbox) — or before any other vault operation."
 ---
 
 # PARA Vault Skill
@@ -11,9 +11,19 @@ Work with a PARA-organized Obsidian vault. **Read [references/VAULT-CONFIG.md](r
 
 PARA sorts every note into one of four buckets — **Projects** (active, goal-bound), **Areas** (ongoing responsibilities), **Resources** (reference material), **Archive** (inactive) — plus an **Inbox** for un-triaged capture. Each bucket is a numbered top-level folder (Inbox = 0, Projects = 1, … Archive = 4); a vault may extend the scheme (e.g. an Outbox). Exact folder names live in the config.
 
-## The `para` property is ground truth
+## The folder is ground truth; `para` is a derived cache
 
-PARA membership is the frontmatter `para` value — `inbox | projects | areas | resources | archive` — **not the note's folder**. Folders drift (a note can sit in the Projects folder while carrying `para: resources`); the index views (Obsidian Bases) filter on `para`, not on path. When filing or classifying, set `para` correctly and treat folder location as a hint, not the truth.
+PARA membership is the note's **folder**. The frontmatter `para` value — `inbox | projects | areas | resources | archive` — is a cache the quick-para plugin derives from the path and overwrites to match:
+
+```js
+const oldParaLocation = frontmatter[propertyName];   // stale property value
+frontmatter[propertyName] = paraLocation;            // derived from FOLDER PATH
+if (oldParaLocation && oldParaLocation !== paraLocation) { /* append para_history */ }
+```
+
+**Do not hand-edit `para`.** The plugin reverts the edit on its next pass *and* appends a `para_history` entry recording your edit as a move that never happened. Measured against the live vault on 2026-09-01, 71% of the 3,254 recorded transitions were produced this way rather than by anyone moving anything.
+
+The index views (Obsidian Bases) do filter on `para`, so a note whose property has drifted from its folder will be misfiled in those views until the plugin next reconciles it — but the fix is to move the file, not to edit the property.
 
 ## Frontmatter contract
 
@@ -29,7 +39,14 @@ Copy-paste examples per note type are in [references/FRONTMATTER.md](references/
 
 ## Moving notes between PARA categories
 
-To move a note between categories, **change its `para` value** — do not just drag the file. The vault's PARA automation (named in the config) then maintains `para_history` and auto-cancels open tasks when a note is archived. Moving the file without updating `para` leaves it misfiled from the indexes' point of view; updating `para` by hand without the automation loses the audit trail. Prefer the automation over a raw property edit whenever Obsidian is running.
+To move a note between categories, **move the file** into the target PARA folder — or use the plugin's sidebar move button, which does the same thing. Do not edit the `para` property.
+
+The plugin's `vault.on('rename')` handler fires on the move, derives the new category from the path, updates `para`, and appends the `para_history` entry. That is the only path that produces a truthful audit trail.
+
+Editing `para` by hand does the opposite: the value is overwritten from the folder on the next pass, and the discrepancy is recorded as a fabricated transition. Two caveats worth knowing:
+
+- **Renames are invisible.** A rename that does not change the folder appends nothing, and the old filename is recorded nowhere.
+- **Auto-cancel-on-archive does not run.** The deployed build passes a fourth argument to a three-parameter `TaggingManager` constructor, so the task manager is silently dropped. The sidebar's confirmation dialog promises open tasks will be cancelled; nothing cancels them. Cancel them explicitly if that matters.
 
 ## Creating notes
 
