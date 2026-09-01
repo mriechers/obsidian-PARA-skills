@@ -48,15 +48,26 @@ worked examples → [FRONTMATTER.md](FRONTMATTER.md).
 - **`tags`**: the **first tag is always `all`** (the universal anchor); then
   lowercase kebab-case topical tags.
 - **`created`**: `YYYY-MM-DD`, sometimes `YYYY-MM-DD HH:mm`.
-- **`para`** (ground truth): `inbox | projects | areas | resources | archive`.
-  Folder location can drift (real example: a note in `1 - PROJECTS/` carrying
-  `para: resources`). The `.base` index views filter on `para`, not on folder.
+- **`para`** (derived cache — **the folder is ground truth**):
+  `inbox | projects | areas | resources | archive`. quick-para computes this from
+  the note's path and overwrites it; hand-editing it is reverted on the next
+  pass *and* forges a `para_history` entry. Drift is real but rare (~70 notes,
+  1.4%) and self-heals on reconciliation. The `.base` index views filter on
+  `para`, so a drifted note is misfiled there until then — fix it by moving the
+  file. See SKILL.md, "The folder is ground truth".
 - **`status`** (projects/areas) — observed vocabulary: `active`, `unprocessed`,
   `incubating`, `draft`, `waiting`, `parked`, `ready`, `prototyping`,
   `processed`, `planning`.
-- **`para_history`** (~1334 notes): append-only audit of PARA moves, written by
-  the quick-para plugin — **agents never hand-edit it** (schema in
-  [FRONTMATTER.md](FRONTMATTER.md)).
+- **`para_history`** (~1,955 notes, 3,254 usable entries): append-only audit of
+  PARA moves, written by the quick-para plugin — **agents never hand-edit it**
+  (schema in [FRONTMATTER.md](FRONTMATTER.md)). **Treat it as noisy**: measured
+  2026-09-01, **71% of entries come from bulk reconciliation, not movement** —
+  ten machine-written bursts, the largest 1,323 identical `areas → resources`
+  entries inside one minute. Also: `date` is UTC and disagrees with US/Central
+  after ~19:00 (derive the local day from `timestamp`); values are dirty in
+  places (`from: project`, `from: 1 - PROJECTS`); sync-conflict copies duplicate
+  entries; and deletes, renames, merges, and first classifications are never
+  recorded at all.
 - Occasional fields: `type` (e.g. `recollection`), `description` / `summary`
   (surfaced as Bases columns), `source` (URL or producer name — vault-courier
   always adds it), `title`, `week_of`, `generated_sections` (journal hook).
@@ -134,11 +145,20 @@ worked examples → [FRONTMATTER.md](FRONTMATTER.md).
   `board`). Lanes are `## Heading` sections; cards are checklist items.
 - Master board: **`0 - INBOX/Project Dashboard.md`** (frontmatter:
   `kanban-plugin: board`, `tags: [all]`, `para: inbox`). quick-para's
-  `projectUpdates.kanbanFile` points here. Lane order:
-  `INBOX` → `NEXT WEEK/HOLD` → `NOPE - SOMEONE ELSE'S PROBLEM` →
-  `SOMEDAY - IS THIS STILL A PRIORITY?` → `THIS WEEK - MEETINGS AND CALLS` →
+  `projectUpdates.kanbanFile` points here. Actual lane order (verified
+  2026-09-01):
+  `INBOX` → `NOPE` → `THIS WEEK - MEETINGS AND CALLS` →
   `THIS WEEK - QUICK WINS` → `THIS WEEK - DEEP FOCUS` → `THIS WEEKEND` →
   `TOMORROW` → `TODAY` → `DOING` → `Done` → `Archive`.
+- **`NEXT WEEK/HOLD`, `NOPE - SOMEONE ELSE'S PROBLEM`, and
+  `SOMEDAY - IS THIS STILL A PRIORITY?` are not lanes.** They are hand-typed
+  **divider cards** inside the single `## NOPE` lane, written as
+  `- [ ] ### Next week/hold`, `- [ ] ### Someday - still a priority?`, and
+  `- [ ] ### Someone else's problem`. A parser must treat a card whose text
+  begins with `###` as a section marker, not a note reference. None of the
+  parked cards carry an `@{date}` — the board's only eight date stamps are all
+  in `Done`/`Archive` — so "how long has this been parked?" has to come from
+  file mtime.
 - Card grammar: `- [ ] [[Note Title]] #context-tag @{YYYY-MM-DD}`. Done cards
   carry `✅ YYYY-MM-DD`.
 - Context hashtags: `#pbswi`, `#me`, `#wonder-cabinet`, `#freelance-biz`,
