@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tests/validate.sh — L1 static validation for obsidian-PARA-skills.
-# Run from anywhere; exits non-zero on any failure. See planning/08-testing-spec.md.
+# Run from anywhere; exits non-zero on any failure.
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

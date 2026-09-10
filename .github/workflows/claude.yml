@@ -12,6 +12,14 @@ on:
 
 jobs:
   claude:
+    # This repository is public. Without this guard, any stranger could trigger a
+    # billed Claude run with write access simply by opening an issue or leaving a
+    # comment. Restrict invocation to people who already have write access.
+    if: >-
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'),
+               github.event.comment.author_association ||
+               github.event.issue.author_association ||
+               github.event.review.author_association)
     permissions:
       contents: write
       pull-requests: write

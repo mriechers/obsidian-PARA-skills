@@ -1,81 +1,120 @@
 # Obsidian PARA Skills
 
-Agent Skills for use with Obsidian, following the [Agent Skills specification](https://agentskills.io/specification) so they can be used by any skills-compatible agent, including Claude Code, Codex, and OpenCode. This repository is a fork of [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) extended with a set of `para-*` skills for working in a [PARA](https://fortelabs.com/blog/para/)-organized vault.
+Agent Skills for working in a [PARA](https://fortelabs.com/blog/para/)-organized
+[Obsidian](https://obsidian.md/) vault. Written to the
+[Agent Skills specification](https://agentskills.io/specification), so they run in any
+skills-compatible agent — Claude Code, Codex, OpenCode.
 
-> **Attribution.** The five upstream skills (`obsidian-markdown`, `obsidian-bases`, `json-canvas`, `obsidian-cli`, `defuddle`) are included **unmodified** from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) (MIT, © [Steph Ango](https://stephango.com/)), forked at commit [`a1dc48e`](https://github.com/kepano/obsidian-skills/commit/a1dc48e). The `para-*` skills are additions by Mark Riechers.
+This is a fork of **[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)**
+by [Steph Ango](https://stephango.com/), which supplies five skills for Obsidian's file
+formats and CLI. Those five are included here **unmodified**. What this fork adds is a
+`para-*` suite for the layer above the file formats: how an actual vault is organized,
+and how an agent should behave inside one.
 
-## Vault-specific values
+## What's different about these skills
 
-The `para-*` skills teach **generic** PARA and Obsidian-plugin patterns. Every value specific to one vault — folder names, tag vocabulary, plugin settings, ports, secret references — lives in a **single file**: [`skills/para-vault/references/VAULT-CONFIG.md`](skills/para-vault/references/VAULT-CONFIG.md). To reuse these skills on a different vault, adapt that one file; the skills themselves stay unchanged.
+Most vault automation breaks the moment it meets a real vault, because it assumes a
+structure the vault doesn't have. The `para-*` skills are built around three ideas that
+came out of using them daily rather than designing them up front.
+
+**One file holds everything vault-specific.** The skills teach *generic* PARA and
+Obsidian-plugin patterns. Every value particular to one vault — folder names, tag
+vocabulary, plugin settings, ports, secret references — lives in a single file,
+[`skills/para-vault/references/VAULT-CONFIG.md`](skills/para-vault/references/VAULT-CONFIG.md).
+Adapting the whole suite to a different vault means editing that one file. The skills
+themselves stay untouched, which is also what makes upstream merges clean.
+
+**A property, not a folder, is ground truth.** PARA membership is the `para` frontmatter
+value, not where the file happens to sit. Folders drift; notes get dragged around; index
+views filter on the property. Skills that trust the path get this wrong constantly.
+
+**Documented failure modes, not just capabilities.** Each skill carries the traps that
+actually bit — a `GOTCHAS.md` where one exists, and inline warnings where it matters. A
+worked example: this vault runs the Tasks plugin with no global filter, so *every*
+`- [ ]` checkbox in the vault is a live task, and an agent writing a casual checklist
+silently creates real ones. That is the kind of thing a generic skill never warns you
+about, and the kind of thing that costs an afternoon.
+
+## Skills
+
+### PARA suite
+
+Added by this fork.
+
+| Skill | Description |
+|-------|-------------|
+| [para-vault](skills/para-vault) | The entry point. PARA folder structure, the `para` property as ground truth, tag and status conventions, templates, and routing between file edits, CLI, and REST API. Read before any other vault operation — it owns `VAULT-CONFIG.md`, which the rest reference. |
+| [para-tasks](skills/para-tasks) | Tasks-plugin syntax in a PARA vault: emoji dates and priorities, recurrence, custom checkbox statuses, and the vault's canonical `tasks` query blocks. |
+| [para-kanban](skills/para-kanban) | Kanban-plugin boards: lanes as headings, cards as checklist items, wikilinks, context hashtags, and `@{date}` syntax. |
+| [para-rest-api](skills/para-rest-api) | Reading and writing notes over the Local REST API plugin: bearer auth, self-signed HTTPS, URL-encoded vault paths. |
+| [para-daily-journal](skills/para-daily-journal) | Daily notes that use HTML section markers for machine-injected content — how to write between the markers without destroying them. |
+
+### Upstream skills
+
+Included **byte-identical** from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills),
+forked at [`a1dc48e`](https://github.com/kepano/obsidian-skills/commit/a1dc48e).
+© [Steph Ango](https://stephango.com/), MIT.
+
+| Skill | Description |
+|-------|-------------|
+| [obsidian-markdown](skills/obsidian-markdown) | [Obsidian Flavored Markdown](https://help.obsidian.md/obsidian-flavored-markdown) — wikilinks, embeds, callouts, properties |
+| [obsidian-bases](skills/obsidian-bases) | [Obsidian Bases](https://help.obsidian.md/bases/syntax) (`.base`) — views, filters, formulas, summaries |
+| [json-canvas](skills/json-canvas) | [JSON Canvas](https://jsoncanvas.org/) (`.canvas`) — nodes, edges, groups, connections |
+| [obsidian-cli](skills/obsidian-cli) | The [Obsidian CLI](https://help.obsidian.md/cli), including plugin and theme development |
+| [defuddle](skills/defuddle) | Clean markdown from web pages via [Defuddle](https://github.com/kepano/defuddle) |
 
 ## Installation
 
-### Marketplace (primary)
+### Claude Code marketplace
 
 ```
 /plugin marketplace add mriechers/obsidian-PARA-skills
 /plugin install obsidian@obsidian-para-skills
 ```
 
-> This is a **private repository**. The machine needs `gh auth login` **and** `gh auth setup-git` (or SSH-agent git credentials) so the marketplace clone can authenticate.
-
 ### npx skills
 
-```
-npx skills add git@github.com:mriechers/obsidian-PARA-skills.git
+```sh
+npx skills add https://github.com/mriechers/obsidian-PARA-skills.git
 ```
 
-SSH form only — an unauthenticated HTTPS clone won't reach a private repo. If you install individual skills rather than the whole pack, you must also install **`para-vault`**: the other `para-*` skills reference its `VAULT-CONFIG.md`.
+Installing individual skills rather than the whole pack? You must also install
+**`para-vault`** — every other `para-*` skill reads its `VAULT-CONFIG.md`.
 
 ### Manually
 
-#### Claude Code
+**Claude Code** — copy the repo contents into a `.claude/` folder at the root of your
+vault (or whichever directory you point Claude Code at). See the
+[Agent Skills docs](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview).
 
-Add the contents of this repo to a `/.claude` folder in the root of your Obsidian vault (or whichever folder you're using with Claude Code). See more in the [official Claude Skills documentation](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview).
+**Codex** — copy `skills/` into your Codex skills path, typically `~/.codex/skills`.
 
-#### Codex
-
-Copy the `skills/` directory into your Codex skills path (typically `~/.codex/skills`). See the [Agent Skills specification](https://agentskills.io/specification) for the standard skill format.
-
-#### OpenCode
-
-Clone the entire repo into the OpenCode skills directory (`~/.opencode/skills/`):
+**OpenCode** — clone the whole repo into `~/.opencode/skills/`:
 
 ```sh
-git clone git@github.com:mriechers/obsidian-PARA-skills.git ~/.opencode/skills/obsidian-PARA-skills
+git clone https://github.com/mriechers/obsidian-PARA-skills.git ~/.opencode/skills/obsidian-PARA-skills
 ```
 
-Do not copy only the inner `skills/` folder — clone the full repo so the directory structure is `~/.opencode/skills/obsidian-PARA-skills/skills/<skill-name>/SKILL.md`.
+Clone the full repo, not just the inner `skills/` folder — OpenCode discovers
+`SKILL.md` files at `~/.opencode/skills/<repo>/skills/<skill-name>/SKILL.md`. Skills
+become available after a restart.
 
-OpenCode auto-discovers all `SKILL.md` files under `~/.opencode/skills/`. No changes to `opencode.json` or any config file are needed. Skills become available after restarting OpenCode.
+## Using these on your own vault
 
-## Skills
+`VAULT-CONFIG.md` currently describes one real vault, which makes it a worked example
+rather than a blank template. To adapt it:
 
-### Upstream skills (© Steph Ango)
+1. Replace §1–2 with your vault's path and PARA folder names.
+2. Rewrite §3 to your frontmatter vocabulary — especially the `para` property values and
+   your anchor tag.
+3. Update §4–7 for the plugins you actually run. Delete the sections for plugins you
+   don't; the skills degrade gracefully when a section is absent.
+4. §8 holds a secret *reference* (a 1Password `op://` path), never a secret. Keep it
+   that way.
 
-Included unmodified from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills).
-
-| Skill | Description |
-|-------|-------------|
-| [obsidian-markdown](skills/obsidian-markdown) | Create and edit [Obsidian Flavored Markdown](https://help.obsidian.md/obsidian-flavored-markdown) (`.md`) with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax |
-| [obsidian-bases](skills/obsidian-bases) | Create and edit [Obsidian Bases](https://help.obsidian.md/bases/syntax) (`.base`) with views, filters, formulas, and summaries |
-| [json-canvas](skills/json-canvas) | Create and edit [JSON Canvas](https://jsoncanvas.org/) files (`.canvas`) with nodes, edges, groups, and connections |
-| [obsidian-cli](skills/obsidian-cli) | Interact with Obsidian vaults via the [Obsidian CLI](https://help.obsidian.md/cli) including plugin and theme development |
-| [defuddle](skills/defuddle) | Extract clean markdown from web pages using [Defuddle](https://github.com/kepano/defuddle), removing clutter to save tokens |
-
-### PARA skills (© Mark Riechers)
-
-| Skill | Description |
-|-------|-------------|
-| [para-vault](skills/para-vault) | Work with a PARA-organized Obsidian vault: folder structure, the `para` frontmatter property as ground truth, tag and status conventions, templates, and routing between file edits, CLI, and REST API. Use when creating, moving, filing, or classifying notes in a PARA vault, or before any other vault operation. |
-| [para-tasks](skills/para-tasks) | Create and query tasks with the Obsidian Tasks plugin in a PARA vault: emoji-format dates and priorities, recurrence, custom checkbox statuses, and the vault's canonical `tasks` query blocks. Use when adding todos, due dates, recurring tasks, priorities, or writing or editing `tasks` queries. |
-| [para-kanban](skills/para-kanban) | Read and edit Obsidian Kanban plugin boards: markdown files with `kanban-plugin` frontmatter, lanes as headings, and cards as checklist items with wikilinks, context hashtags, and `@{date}` syntax. Use when adding cards, moving cards between lanes, or editing kanban board files, especially a PARA project dashboard. |
-| [para-rest-api](skills/para-rest-api) | Read and write Obsidian vault notes over the Local REST API plugin using curl: bearer-token auth, HTTPS with a self-signed certificate, and URL-encoded vault paths. Use when Obsidian is running and notes must be created or read programmatically, or when another service needs HTTP access to the vault. |
-| [para-daily-journal](skills/para-daily-journal) | Read and update daily journal notes that use HTML section markers for machine-injected content. Use when editing today's daily note, appending journal entries or tasks, injecting content into a journal section, or reading the daily journal folder. |
+Nothing outside that file needs to change.
 
 ## Upstream sync
-
-This fork tracks [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills). To pull upstream changes:
 
 ```sh
 git remote add upstream https://github.com/kepano/obsidian-skills.git   # one-time
@@ -83,14 +122,16 @@ git fetch upstream
 git merge upstream/main
 ```
 
-The five upstream skill directories are kept **byte-identical** to upstream, so the expected conflict surface is `README.md` and `.claude-plugin/` only — resolve by keeping this fork's packaging and taking upstream's skill changes wholesale.
+The five upstream skill directories are kept byte-identical, so the expected conflict
+surface is `README.md` and `.claude-plugin/` only. Resolve by keeping this fork's
+packaging and taking upstream's skill changes wholesale.
 
 ## Development
 
-- `planning/` holds the build docs for the `para-*` skills.
-- Run `tests/validate.sh` before committing (static validation of frontmatter, links, packaging, and forbidden content).
-- Release and update steps are in [`planning/09-deployment-runbook.md`](planning/09-deployment-runbook.md).
+Run `tests/validate.sh` before committing — static validation of frontmatter, links,
+packaging, and forbidden content.
 
 ## License
 
-MIT. Upstream content © [Steph Ango](https://stephango.com/) (kepano); PARA additions © Mark Riechers. See [LICENSE](LICENSE).
+MIT. Upstream skills © [Steph Ango](https://stephango.com/) (kepano); the `para-*`
+skills © Mark Riechers. See [LICENSE](LICENSE).

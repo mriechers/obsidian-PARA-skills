@@ -6,6 +6,14 @@ on:
 
 jobs:
   review:
+    # This repository is public. Fork PRs must not spend billed Claude runs or
+    # reach the app's private key, so restrict reviews to branches pushed by
+    # people who already have write access. To review an outside contribution,
+    # check the branch out locally and open a PR from this repo.
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'),
+               github.event.pull_request.author_association)
     permissions:
       contents: read
       checks: write
