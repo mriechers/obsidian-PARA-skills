@@ -68,7 +68,7 @@ forked at [`a1dc48e`](https://github.com/kepano/obsidian-skills/commit/a1dc48e).
 ### Claude Code marketplace
 
 ```
-/plugin marketplace add mriechers/obsidian-PARA-skills
+/plugin marketplace add https://github.com/mriechers/obsidian-PARA-skills
 /plugin install obsidian@obsidian-para-skills
 ```
 
