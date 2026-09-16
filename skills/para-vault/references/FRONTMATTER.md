@@ -71,8 +71,21 @@ para: resources
 
 ## Archived note
 
-Set `para: archive` and let the quick-para automation append to `para_history` and
-auto-cancel open tasks — do not just move the file (see SKILL.md).
+**Move the file into `4 - ARCHIVE/<year>/`** — do not set `para: archive` by
+hand. quick-para's `rename` handler derives `para` from the folder, sets
+`archived:` (once, never cleared), and appends the `para_history` entry.
+Hand-editing `para` is reverted on the next pass and forges a fake transition
+(see SKILL.md, "Moving notes between PARA categories").
+
+Note that **auto-cancel-on-archive does not actually run** — the deployed build
+drops its task manager through a constructor-arity bug, so open tasks survive
+archival despite the sidebar dialog promising otherwise. Cancel them explicitly
+if it matters.
+
+Below is what a correctly archived note ends up carrying, not what to write by
+hand. `status` is often stale here — it is write-once and never updated on
+archival (`status: active` survives into the Archive on 66 notes), so don't read
+it as current.
 
 ```yaml
 ---
@@ -82,6 +95,7 @@ tags:
 created: 2025-11-02
 para: archive
 status: processed
+archived: 2026-08-07
 ---
 ```
 
