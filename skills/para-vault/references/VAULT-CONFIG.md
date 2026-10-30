@@ -27,12 +27,13 @@ sibling was installed standalone (per-skill copiers like `npx skills`), install
                       PBSWI, WONDER CABINET; PROJECT INDEX.base
 2 - AREAS/            ongoing areas (many subfolders incl. MEETINGS, THERAPY,
                       INTERNET CLIPPINGS/YYYY/MM/DD date tree); AREAS INDEX.base
-3 - RESOURCES/        ~40 topic subfolders incl. TEMPLATES/; RESOURCE INDEX.base
+3 - RESOURCES/        ~40 topic subfolders; RESOURCE INDEX.base
 4 - ARCHIVE/          by year (2024/ 2025/ 2026/); 2026/ARCHIVE INDEX.base
 5 - OUTBOX/           non-canonical addition; outbound drafts/pitches (sparse)
+TEMPLATES/            Templater templates, at the vault root (not a PARA folder)
 ```
 
-- Daily journal: `0 - INBOX/DAILY JOURNAL/`. Templates: `3 - RESOURCES/TEMPLATES/`.
+- Daily journal: `0 - INBOX/DAILY JOURNAL/`. Templates: `TEMPLATES/`.
 - Internet clippings live under a `2 - AREAS/INTERNET CLIPPINGS/YYYY/MM/DD` date
   tree.
 - Investigation subfolders under `2 - AREAS/INVESTIGATIONS/*/` use `README.md` as
@@ -69,24 +70,20 @@ worked examples → [FRONTMATTER.md](FRONTMATTER.md).
 ## 4. Templates map
 
 - Engine: **Templater** (`templater-obsidian`), `trigger_on_file_creation: true`.
-  Core Templates plugin disabled. Template dir: `3 - RESOURCES/TEMPLATES/` (user
-  scripts in `TEMPLATES/scripts/`).
+  Core Templates plugin disabled. Template dir: `TEMPLATES/` (user scripts in
+  `TEMPLATES/scripts/`).
 - Folder → template map (from `.obsidian/plugins/templater-obsidian/data.json`):
 
 | Folder | Template |
 |---|---|
 | `0 - INBOX` | `inbox-template.md` |
 | `0 - INBOX/DAILY JOURNAL` | `journal-template.md` |
-| `1 - PROJECTS - Action Needed` | `projects-template.md` |
-| `1 - PROJECTS/CODING PROJECTS` | `coding-project-template.md` |
-| `1 - PROJECTS/PBSWI/CHORES` | `PBSWI-dailies-weeklies-template.md` |
-| `2 - AREAS - Tracking and Check-ins` | `areas-template.md` |
-| `2 - AREAS/THERAPY` | `therapy-template.md` |
-| `3 - RESOURCES` | `archive-template.md` |
-| `3 - RESOURCES/VIPs` | `Important Details for NAME.md` |
-| `4 - ARCHIVE` | `archive-template.md` |
-| `/` (default) | `default-template.md` |
+| `0 - INBOX/MEETINGS` | `meeting-notes-template.md` |
 
+- Other folders have no folder template. For an out-of-app note there, use the
+  matching file in `TEMPLATES/` (`projects-template.md`, `areas-template.md`,
+  `resources-template.md`, `archive-template.md`, `coding-project-template.md`,
+  or `default-template.md`).
 - The default/inbox/projects/areas/archive templates share a skeleton:
   frontmatter (`tags: [all]`, `created`) + `## 🗒 Tasks in this note` with the
   per-note rollup query (§7) + `## Resources` + `## Notes`.
@@ -145,7 +142,8 @@ worked examples → [FRONTMATTER.md](FRONTMATTER.md).
   `#job-search`, `#backburner`, `#casi`, `#wpm`, `#pd`, `#coding-projects`
   (color/sort priority defined in the board's `%% kanban:settings %%` block).
 - Plugin settings (`.obsidian/plugins/obsidian-kanban/data.json`): new-card notes
-  → `0 - INBOX` with `3 - RESOURCES/TEMPLATES/default-template.md`;
+  → `0 - INBOX` with `3 - RESOURCES/TEMPLATES/default-template.md` (stale: the
+  template now lives at `TEMPLATES/default-template.md`);
   `move-task-metadata: true`, `move-tags: true`, `tag-action: kanban`,
   `show-relative-date: true`, `archive-with-date: true`, `max-archive-size: 30`.
 - `kanban-tag-sync` keeps card hashtags ↔ note tags in sync — hashtag edits on
