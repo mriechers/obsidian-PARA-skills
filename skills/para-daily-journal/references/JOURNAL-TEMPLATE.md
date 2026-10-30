@@ -2,7 +2,7 @@
 
 A snapshot of the daily-note skeleton from `journal-template.md`, annotated with
 which automation writes each part and what an agent may touch. **Structural
-reference only** — the live template in the vault (`3 - RESOURCES/TEMPLATES/journal-template.md`)
+reference only** — the live template in the vault (`TEMPLATES/journal-template.md`)
 is authoritative; if the two disagree, trust the vault. Section names, callout
 types, and values here mirror
 [`../../para-vault/references/VAULT-CONFIG.md`](../../para-vault/references/VAULT-CONFIG.md) §5, which is the source of
