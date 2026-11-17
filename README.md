@@ -1,5 +1,8 @@
 # Obsidian PARA Skills
 
+> [!WARNING]
+> **Sunsetting. Don't add new work here.** These skills are moving to a new home and this repo will be archived once they've moved. It stays readable for reference.
+
 Agent Skills for working in a [PARA](https://fortelabs.com/blog/para/)-organized
 [Obsidian](https://obsidian.md/) vault. Written to the
 [Agent Skills specification](https://agentskills.io/specification), so they run in any
