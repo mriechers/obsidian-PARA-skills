@@ -1,8 +1,7 @@
 # Obsidian PARA Skills
 
 > [!WARNING]
-> **Sunsetting. Don't add new work here.** These skills are moving into the personal domain marketplace's repo, and this repo will retire once they're moved. Use **`mriechers-skills/plugins/` in [`mriechers-skills`](https://github.com/mriechers/mriechers-skills)** instead.
-> See the [sunset registry](https://github.com/mriechers/skill-ops/blob/master/docs/sunset-registry.md) and [skill-ops ADR 0014](https://github.com/mriechers/skill-ops/blob/master/docs/adr/0014-one-domain-marketplace-per-domain.md).
+> **Sunsetting. Don't add new work here.** These skills are moving to a new home and this repo will be archived once they've moved. It stays readable for reference.
 
 Agent Skills for working in a [PARA](https://fortelabs.com/blog/para/)-organized
 [Obsidian](https://obsidian.md/) vault. Written to the
